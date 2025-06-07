@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "Launch",
+            "program": "${workspaceFolder}/test.lua",
+            "luaexe": "/usr/bin/lua",
+            "client": true,
+            "stopOnEntry": true,
+            "luaArch": "x86_64",
+            "luaVersion": "lua54",
+            
+        }
+    ]
+}
