@@ -20,6 +20,21 @@
 local json_decode = require('main').parse
 -- ===========================================================================
 
+local function dump(o)
+	if type(o) == "table" then
+		local s = "{ "
+		for k, v in pairs(o) do
+			if type(k) ~= "number" then
+				k = '"' .. k .. '"'
+			end
+			s = s .. "[" .. k .. "] = " .. dump(v) .. ","
+		end
+		return s .. "} "
+	else
+		return tostring(o)
+	end
+end
+
 
 -- Deep table comparison function
 -- Returns true if tables are deeply equal, false otherwise.
@@ -159,8 +174,8 @@ local function run_tests()
                 passed_count = passed_count + 1
             else
                 print("FAILED (mismatch)")
-                print("    Expected: " .. tostring(expected_val))
-                print("    Got:      " .. tostring(result_or_err_msg))
+                print("    Expected: " .. dump(expected_val))
+                print("    Got:      " .. dump(result_or_err_msg))
                 -- Optionally, add more detailed print for tables
                 -- if type(expected_val) == "table" and type(result_or_err_msg) == "table" then
                 --     print("    Expected table (debug):")

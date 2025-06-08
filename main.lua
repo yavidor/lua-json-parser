@@ -1,7 +1,16 @@
 local utils = require("utils")
 local utf8 = require("utf8")
 
-local escapes = { '"', "\\", "/", "b", "f", "n", "r", "t" }
+local escapes = {
+	['"'] = '"',
+	["\\"] = "\\",
+	["/"] = "/",
+	["b"] = "\b",
+	["f"] = "\f",
+	["n"] = "\n",
+	["r"] = "\r",
+	["t"] = "\t",
+}
 local delimiters = { ",", "]", "}" }
 local literals = { "true", "false", "null" }
 
@@ -27,13 +36,14 @@ local function parse_string(str, i)
 			val = val .. string.sub(str, k, j - 1)
 			j = j + 1
 			local char = string.sub(str, j, j)
+			local escapes_keys = utils.create_key_array(escapes)
 			if char == "u" then
 				local hex = string.match(str, "%x%x%x%x", j)
 				local unicode = utf8.char(tonumber(hex, 16))
 				val = val .. unicode
 				j = j + string.len(hex)
-			elseif utils.is_value_in_table(escapes, char) then
-				val = val .. "\\" .. char
+			elseif utils.is_value_in_table(escapes_keys, char) then
+				val = val .. escapes[char]
 			else
 				utils.throw_decode_error(j, "Unsupported escpae code")
 			end
@@ -81,6 +91,9 @@ local function parse_object(str, i)
 	local j = utils.next_non_space(str, i)
 	local possible_starts_array = utils.create_key_array(Value_function_map)
 	while j <= #str do
+		if string.sub(str, j, j) == "}" then
+			return val, utils.next_non_space(str, j)
+		end
 		if key == nil then
 			key, j = parse_string(str, j)
 			j = utils.next_non_space(str, j - 1)
@@ -116,10 +129,13 @@ local function parse_array(str, i)
 	local val = {}
 	local array_index = 1
 	local j = i + 1
-	while j < #str do
+	while j <= #str do
 		local char = string.sub(str, j, j)
 		local key_array = utils.create_key_array(Value_function_map)
 
+		if string.sub(str, j, j) == "]" then
+			return val, utils.next_non_space(str, j)
+		end
 		if utils.is_value_in_table(key_array, char) then
 			val[array_index], j = Value_function_map[char](str, j)
 			array_index = array_index + 1
