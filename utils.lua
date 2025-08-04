@@ -11,7 +11,7 @@ local function is_value_in_table(tbl, val)
 	return false
 end
 
----comment
+---Gets a table and return the keys in an array
 ---@param tbl table
 local function create_key_array(tbl)
 	local ret = {}
@@ -21,7 +21,7 @@ local function create_key_array(tbl)
 	return ret
 end
 
----Throws a json decoding error, shows index and message
+---Throws a JSON decoding error, shows index and message
 ---@param i number The index in the JSON string
 ---@param message string A description of the problem
 local function throw_decode_error(i, message)

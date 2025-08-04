@@ -1,4 +1,5 @@
 local utils = require("utils")
+
 local utf8 = require("utf8")
 
 local escapes = {
@@ -38,7 +39,11 @@ local function parse_string(str, i)
 			local char = string.sub(str, j, j)
 			local escapes_keys = utils.create_key_array(escapes)
 			if char == "u" then
-				local hex = string.match(str, "%x%x%x%x", j)
+				local hex = string.match(str, "^%x%x%x%x", j)
+				--                TODO: Add surrogate pairs
+				--                Also learn how to write surrogate
+				--                local hex_value =
+
 				local unicode = utf8.char(tonumber(hex, 16))
 				val = val .. unicode
 				j = j + string.len(hex)
@@ -188,21 +193,21 @@ end
 Value_function_map = {
 	["{"] = parse_object,
 	["["] = parse_array,
-	["0"] = parse_number,
-	["1"] = parse_number,
-	["2"] = parse_number,
-	["3"] = parse_number,
-	["4"] = parse_number,
-	["5"] = parse_number,
-	["6"] = parse_number,
-	["7"] = parse_number,
-	["8"] = parse_number,
-	["9"] = parse_number,
-	["-"] = parse_number,
+	["0"] = parse_number, -- Number
+	["1"] = parse_number, -- Number
+	["2"] = parse_number, -- Number
+	["3"] = parse_number, -- Number
+	["4"] = parse_number, -- Number
+	["5"] = parse_number, -- Number
+	["6"] = parse_number, -- Number
+	["7"] = parse_number, -- Number
+	["8"] = parse_number, -- Number
+	["9"] = parse_number, -- Number
+	["-"] = parse_number, -- Number (Negative)
 	['"'] = parse_string,
-	["t"] = parse_literal, --true
-	["f"] = parse_literal, --false
-	["n"] = parse_literal, --null
+	["t"] = parse_literal, -- true
+	["f"] = parse_literal, -- false
+	["n"] = parse_literal, -- null
 }
 
 return {
